@@ -1,9 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import {
-  Dialog
- 
-} from "@headlessui/react";
+import { Dialog } from "@headlessui/react";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 
 const baseUrl = "http://localhost:3000/user/email/";
@@ -31,6 +28,69 @@ export default function Home() {
   const [isPasswordChanged, setIsPasswordChanged] = useState(false);
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [errors, setErrors] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+  });
+  const validateFirstName = (firstName: string) => {
+    if (!firstName.trim()) {
+      return "El nombre no puede estar vacío";
+    }
+    if (firstName.length < 2) {
+      return "El nombre debe tener al menos 2 caracteres";
+    }
+    if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(firstName)) {
+      return "El nombre solo puede contener letras";
+    }
+    return "";
+  };
+
+  const validateLastName = (lastName: string) => {
+    if (!lastName.trim()) {
+      return "El apellido no puede estar vacío";
+    }
+    if (lastName.length < 2) {
+      return "El apellido debe tener al menos 2 caracteres";
+    }
+    if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(lastName)) {
+      return "El apellido solo puede contener letras";
+    }
+    return "";
+  };
+
+  const validateEmail = (email: string) => {
+    if (!email.trim()) {
+      return "El correo electrónico no puede estar vacío";
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return "Ingrese un correo electrónico válido";
+    }
+    return "";
+  };
+
+  const validatePassword = (password: string) => {
+    if (password && password.length < 6) {
+      return "La contraseña debe tener al menos 6 caracteres";
+    }
+    return "";
+  };
+
+  const validateForm = () => {
+    const newErrors = {
+      firstName: validateFirstName(editedData?.firstName || ""),
+      lastName: validateLastName(editedData?.lastName || ""),
+      email: validateEmail(editedData?.email || ""),
+      password: validatePassword(newPassword),
+    };
+
+    setErrors(newErrors);
+
+    // Return true if no errors
+    return !Object.values(newErrors).some((error) => error !== "");
+  };
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -64,6 +124,11 @@ export default function Home() {
   }, []);
 
   const handleUpdate = async () => {
+    // Validate form before submission
+    if (!validateForm()) {
+      return;
+    }
+
     try {
       const token = localStorage.getItem("token");
 
@@ -95,8 +160,16 @@ export default function Home() {
       setNewPassword("");
       setIsPasswordChanged(false);
       setShowSuccessDialog(true);
+      setErrors({
+        firstName: "",
+        lastName: "",
+        email: "",
+        password: "",
+      });
     } catch (error) {
-      console.error("Error al actualizar usuario:", error);
+      if (axios.isAxiosError(error) && error.response) {
+        alert("Ocurrió un error al actualizar. Por favor, intenta nuevamente.");
+      }
     }
   };
   const handleLogout = () => {
@@ -125,12 +198,31 @@ export default function Home() {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
+    if (name in errors) {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+
     if (name === "password") {
       setNewPassword(value);
       setIsPasswordChanged(true);
     } else {
       setEditedData((prev) => (prev ? { ...prev, [name]: value } : null));
     }
+  };
+
+  const handleCancelEdit = () => {
+    setEditedData(userData ? { ...userData, password: "" } : null);
+    setNewPassword("");
+    setIsPasswordChanged(false);
+
+    setErrors({
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+    });
+
+    setIsEditing(false);
   };
 
   function deletepop() {
@@ -286,24 +378,30 @@ export default function Home() {
                 Actualizar
               </button>
             ) : (
-              <button
-                onClick={handleUpdate}
-                type="button"
-                className="text-white bg-gradient-to-r from-green-500 via-green-600 to-green-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 shadow-lg shadow-green-500/50 dark:shadow-lg dark:shadow-green-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2"
-              >
-                Guardar
-              </button>
-              
-              
-            )}
-            
-            <button
+              <div className="flex justify-between space-x-2">
+                <button
+                  onClick={handleUpdate}
                   type="button"
-                  className="inline-flex justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500"
-                  onClick={handleLogout}
+                  className="flex-grow text-white bg-gradient-to-r from-green-500 via-green-600 to-green-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-green-300 dark:focus:ring-green-800 shadow-lg shadow-green-500/50 dark:shadow-lg dark:shadow-green-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
                 >
-                  Cerrar Sesión
+                  Guardar
                 </button>
+                <button
+                  onClick={handleCancelEdit}
+                  type="button"
+                  className="flex-grow text-white bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 shadow-lg shadow-red-500/50 dark:shadow-lg dark:shadow-red-800/80 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+                >
+                  Cancelar
+                </button>
+              </div>
+            )}
+            <button
+              type="button"
+              className="inline-flex justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500"
+              onClick={handleLogout}
+            >
+              Cerrar Sesión
+            </button>
           </div>
         </div>
         <button
@@ -349,17 +447,15 @@ export default function Home() {
                   </div>
                 </div>
               </div>
-                <div className="sm:flex sm:flex-row-reverse">
-                  <button
-                    type="button"
-                    className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 sm:ml-3 sm:w-auto"
-                    onClick={() => setShowSuccessDialog(false)}
-                  >
-                    Aceptar
-                  </button>
-                </div>
-                
-              
+              <div className="sm:flex sm:flex-row-reverse">
+                <button
+                  type="button"
+                  className="inline-flex w-full justify-center rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 sm:ml-3 sm:w-auto"
+                  onClick={() => setShowSuccessDialog(false)}
+                >
+                  Aceptar
+                </button>
+              </div>
             </Dialog.Panel>
           </div>
         </div>

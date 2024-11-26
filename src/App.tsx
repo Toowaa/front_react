@@ -2,6 +2,7 @@ import { Dialog } from "@headlessui/react";
 import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router";
+import gato from '/gato.webp'
 
 const baseUrl = "http://localhost:3000/auth/login";
 
@@ -14,7 +15,6 @@ interface LoginError {
   statusCode: number;
 }
 
-
 export default function App() {
   const navigate = useNavigate();
   const [newFirstName, setFname] = useState("");
@@ -23,7 +23,7 @@ export default function App() {
   const [newPassword, setNpassword] = useState("");
 
   const [error, setError] = useState<string>("");
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const baseurl = "http://localhost:3000/user";
@@ -34,16 +34,15 @@ export default function App() {
     e.preventDefault();
     try {
       await axios.post(`${baseurl}`, {
-        firstName:newFirstName,
-        lastName:newLastName,
-        email:newEmail,
-        password:newPassword,
+        firstName: newFirstName,
+        lastName: newLastName,
+        email: newEmail,
+        password: newPassword,
       });
       setIsDeleteDialogOpen(false);
-      loading
+      loading;
     } catch (error) {
       console.error("Registration error", error);
-     
     }
   };
 
@@ -69,7 +68,7 @@ export default function App() {
 
       localStorage.setItem("token", response.data.access_token);
       localStorage.setItem("email", email);
-   
+
       axios.defaults.headers.common[
         "Authorization"
       ] = `Bearer ${response.data.access_token}`;
@@ -208,11 +207,8 @@ export default function App() {
         <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
           <div className="sm:mx-auto sm:w-full sm:max-w-sm">
             <img
-
-              src="public\gato.webp"
-
+              src={gato} 
               alt="Your Company"
-           
               className="mx-auto h-40 w-40 rounded-full object-cover border-4 border-white shadow-lg"
             />
             <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-white">
