@@ -1,20 +1,18 @@
-
+import React from 'react'
 import { createRoot } from 'react-dom/client'
-import './index.css'
+import { HashRouter, Route, Routes } from 'react-router-dom'
 import App from './App.tsx'
-import { BrowserRouter, Route, Routes } from 'react-router'
 import Home from './homet.tsx'
+import './index.css'
 
-
-
-createRoot(document.getElementById('root')!).render(
-   
-  <BrowserRouter>
-  <Routes>
-    
+const root = createRoot(document.getElementById('root')!)
+root.render(
+  <React.StrictMode>
+    <HashRouter>
+      <Routes>
         <Route path="/" element={<App />} />
         <Route path="/home" element={<Home/>} />
-     
       </Routes>
-</BrowserRouter>
+    </HashRouter>
+  </React.StrictMode>
 )

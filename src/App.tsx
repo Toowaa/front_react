@@ -208,8 +208,11 @@ export default function App() {
         <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
           <div className="sm:mx-auto sm:w-full sm:max-w-sm">
             <img
+
+              src="public\gato.webp"
+
               alt="Your Company"
-              src="\src\assets\images\un-gato-negro_-estilo-dibujo-con-grafeno.webp"
+           
               className="mx-auto h-40 w-40 rounded-full object-cover border-4 border-white shadow-lg"
             />
             <h2 className="mt-10 text-center text-2xl/9 font-bold tracking-tight text-white">
