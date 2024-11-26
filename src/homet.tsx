@@ -1,10 +1,8 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import {
-  Dialog,
-  DialogBackdrop,
-  DialogPanel,
-  DialogTitle,
+  Dialog
+ 
 } from "@headlessui/react";
 import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 

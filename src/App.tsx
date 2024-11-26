@@ -1,5 +1,5 @@
 import { Dialog } from "@headlessui/react";
-import axios, { Axios } from "axios";
+import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 
@@ -13,12 +13,7 @@ interface LoginError {
   message: string;
   statusCode: number;
 }
-interface userdto {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-}
+
 
 export default function App() {
   const navigate = useNavigate();
@@ -28,13 +23,11 @@ export default function App() {
   const [newPassword, setNpassword] = useState("");
 
   const [error, setError] = useState<string>("");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false)
   const [email, setEmail] = useState("");
-  const [IsLogged,setIslogged]=useState(false);
   const [password, setPassword] = useState("");
   const baseurl = "http://localhost:3000/user";
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(!open);
+
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const handleCreate = async (e: React.FormEvent) => {
@@ -47,6 +40,7 @@ export default function App() {
         password:newPassword,
       });
       setIsDeleteDialogOpen(false);
+      loading
     } catch (error) {
       console.error("Registration error", error);
      
